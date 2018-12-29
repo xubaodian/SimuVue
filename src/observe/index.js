@@ -1,3 +1,5 @@
+import { Dep } from './dep';
+
 //属性监听
 export function defineReactive(obj, key, val, customSetter) {
   //获取对象给定属性的描述符
@@ -19,13 +21,19 @@ export function defineReactive(obj, key, val, customSetter) {
   }
 
   //如果监听的是一个对象，继续深入监听
-  walk(obj[key], customSetter);
+  let childOb = observe(val);
   //监听属性
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
       const value = getter ? getter.call(obj) : val;
+      if (Dep.target) {
+        dep.depend();
+        if (childOb) {
+          childOb.dep.depend();
+        }
+      }
       return value;
     },
     set: function reactiveSetter (newVal) {
@@ -34,7 +42,6 @@ export function defineReactive(obj, key, val, customSetter) {
       if (newVal === value) {
         return;
       }
-      walk(obj[key], customSetter);
       //自定义响应函数
       if (customSetter) {
         customSetter(newVal);
@@ -44,18 +51,43 @@ export function defineReactive(obj, key, val, customSetter) {
       } else {
         val = newVal;
       }
+      childOb = observe(newVal);
+      dep.notify();
     }
   })
 }
 
 
 
+//监听value
+export function observe(value){
+  let ob = null;
+  if (isObject(value)){
+    if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
+      ob = value.__ob__;
+    } else {
+      ob = new Observer(value);
+    }
+  }
+  return ob;
+}
 
-function walk (obj, customSetter){
-  if (typeof obj === 'object'){
-    const keys = Object.keys(obj);
-    for (let i = 0; i < keys.length; i++) {
-      defineReactive(obj, keys[i], obj[keys[i]], customSetter);
+
+//观察者对象
+class Observer {
+  constructor(value) {
+    this.value = value;
+    this.dep = new Dep();
+    this.walk(value);
+  }
+
+  //监听对象所有属性
+  walk(obj) {
+    if (isObject(obj)){
+      const keys = Object.keys(obj)
+      for (let i = 0; i < keys.length; i++) {
+        defineReactive(obj, keys[i])
+      }
     }
   }
 }
@@ -70,59 +102,3 @@ let hasOwnProperty = Object.prototype.hasOwnProperty;
 function hasOwn(obj, key) {
    return hasOwnProperty.call(obj, key);
 }
-
-class Watcher{
-  constructor(vm) {
-    this.dom = vm._dom;
-    this.data = vm._data;
-    Dep.target = this;
-  }
-
-  update() {
-
-  }
-
-  init() {
-    let keys = Object.keys(this.data);
-    let i = keys.length;
-    while(i >= 0) {
-
-    }
-  }
-}
-
-//依赖中心
-class Dep {
-  constructor() {
-    //订阅列表
-    this.subs = [];
-  }
-
-  //添加订阅
-  addSub(watcher) {
-    this.subs.push[watcher];
-  }
-
-  //删除订阅者
-  remove(watcher) {
-    let index = this.subs.findIndex(item => item.id === watcher.id);
-    if (index > -1) {
-      this.subs.splice(index, 1);
-    }
-  }
-
-  //添加依赖
-  depend () {
-    if (Dep.target) {
-      Dep.target.addDep(this);
-    }
-  }
-
-  notify() {
-    this.subs.map(item => {
-      item.update();
-    });
-  }
-}
-
-Dep.target = null; 
