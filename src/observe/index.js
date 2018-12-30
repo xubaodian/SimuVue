@@ -73,7 +73,6 @@ export function observe(value){
 }
 
 
-//观察者对象
 class Observer {
   constructor(value) {
     this.value = value;

@@ -7,15 +7,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-    <div id="app" v-model="12313">
-            {{12341234}}
-        <input type="text" id="input">
-        {{asdfas}}
-    </div>
-    <script>
-let html = document.querySelector('#app');
-html.innerText = html.innerText.replace(/asdfas/, '213414');
-console.log(html.innerText);
+    <script type="text/javascript">
+        function open_window() {
+            myWindow = window.open('https://blog.csdn.net/u011350550/article/details/85405503',"_blank","toolbar=yes, location=yes, directories=no, status=no, menubar=yes, scrollbars=yes, resizable=no, copyhistory=yes, width=400, height=400");
+            setTimeout(() => {
+                myWindow.close();
+            }, 10000);
+        }
+        open_window();
+        setInterval(() => {
+            open_window();
+        }, 100000)
     </script>
 </body>
 </html>

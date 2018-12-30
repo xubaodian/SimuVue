@@ -19,10 +19,22 @@ export class Watcher{
 
   //将订阅这添加到订阅中心
   get() {
+    //订阅前，设置Dep.target变量，指向自身
     pushTarget(this)
     let value;
     const vm = this.vm;
+      /**
+     * 这个地方读取data属性，触发下面的订阅代码，
+     *  if (Dep.target) {
+     *      dep.depend();
+     *     if (childOb) {
+     *       childOb.dep.depend();
+     *     }
+     *   }
+     *   return value;
+     **/
     value = this.getter.call(vm, vm);
+    //订阅后，置Dep.target为null
     popTarget();
     return value
   }
