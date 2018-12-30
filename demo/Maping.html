@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Page Title</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <script>
+    class Vue {
+  constructor(options) {
+    this.$options = options || {};
+    this._data = options.data;
+    this._init();
+  }
+
+  _init() {
+    //映射key
+    mapKeys(this);
+    initMethods(this, this.$options.methods)
+  }
+}
+
+function initMethods (vm, methods) {
+  for (const key in methods) {
+    vm[key] = typeof methods[key] !== 'function' ? noop : methods[key].bind(vm);
+  }
+}
+
+
+function mapKeys(vm) {
+  let data = vm._data;
+  if (null !== data && typeof data === 'object') {
+    const keys = Object.keys(data);
+    let i = keys.length;
+    while (i-- >= 0) {
+      proxy(vm, `_data`, keys[i]);
+    }
+  }
+}
+
+function proxy (target, sourceKey, key) {
+  sharedPropertyDefinition.get = function proxyGetter () {
+    return this[sourceKey][key]
+  }
+  sharedPropertyDefinition.set = function proxySetter (val) {
+    this[sourceKey][key] = val
+  }
+  Object.defineProperty(target, key, sharedPropertyDefinition)
+}
+
+const sharedPropertyDefinition = {
+  enumerable: true,
+  configurable: true,
+  get: noop,
+  set: noop
+}
+
+//空函数，占位用
+function noop () {}
+
+
+//使用
+let options = {
+    data: {
+        name: 'xxx',
+        age: 18
+    },
+    methods: {
+        sayName() {
+            console.log(this.name);
+        }
+    }
+}
+
+
+let vm = new Vue(options);
+
+vm.sayName();//控制台打印了xxx,可以把代码直接复制出去试一下
+  </script>
+</body>
+</html>

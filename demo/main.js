@@ -1,6 +1,7 @@
 import { Vue } from '../src/index';
 
 let options = {
+    el: '#app',
     data: {
         name: 'xxx',
         age: 18
@@ -14,5 +15,3 @@ let options = {
 
 
 let vm = new Vue(options);
-
-vm.sayName();

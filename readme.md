@@ -1,6 +1,9 @@
 本工程是学习Vue源码的一个工程，会分析Vue源码，并实现其中一些功能，主要内容如下：<br>
-
-1、属性映射<br>
+启动工程命令如下,监听端口为20000：<br>
+```
+npm run dev
+```
+### 1、属性映射
 使用Vue时，无论是获取data中的属性，还是调用methods的方法，我们都直接用vm[key],并没有使用vm.data[key]或vm.methods[key]。如下：
 ```javascript
 let vm = new Vue({
@@ -15,4 +18,7 @@ let vm = new Vue({
   }
 })
 ```
-这是因为初始化的时候，vue把data等属性做了代理，具体解释请访问 [属性映射说明](./docs/AttrMapping.md)。
+这是因为初始化的时候，vue把data等属性做了代理，具体解释请访问 [属性映射说明](./docs/AttrMapping.md)。<br>
+
+### 2、Vue的双向绑定
+双向绑定属性应该是很多人喜欢的Vue这个框架的原因，这个特定非常让我们无需特别关注dom操作，只需关心值的变化，Vue会自动更新视图（View），更详细的介绍请移步 [双向绑定介绍](./docs/TwoWaysBinding.md)。

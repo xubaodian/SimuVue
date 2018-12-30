@@ -1,4 +1,5 @@
-Vue源码解析（一）data属性映射和methods函数引用的重定义<br>
+## Vue源码解析（一）data属性映射和methods函数引用的重定义
+
 使用Vue框架进行开发时，我们在option的data和methods中定义属性和方法，在调用时直接使用  vm.attr 或 vm.func()的形式，而不是用vm.data.attr或vm.methods.func()的方式。<br>
 我们下面就一起学习下原理。<br>
 我们传入Vue的options对象一般为以下这种形式，<br>
