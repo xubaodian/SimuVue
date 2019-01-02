@@ -7,7 +7,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-    <script type="text/javascript">
+    <div id="app">
+        <span id="test1">1234123</span>
+        <span id="test2">1234123</span>
+    </div>
+    <textarea oninput="handleInput()"></textarea>
+    <script>
+        let dom = document.getElementById('app');
+        let test1 = document.getElementById('test1');
+        dom.removeChild(test1);
+        console.log(1234);
+    </script>
+    <!-- <script type="text/javascript">
         function open_window() {
             myWindow = window.open('https://blog.csdn.net/u011350550/article/details/85405503',"_blank","toolbar=yes, location=yes, directories=no, status=no, menubar=yes, scrollbars=yes, resizable=no, copyhistory=yes, width=400, height=400");
             setTimeout(() => {
@@ -18,6 +29,6 @@
         setInterval(() => {
             open_window();
         }, 100000)
-    </script>
+    </script> -->
 </body>
 </html>
