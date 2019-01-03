@@ -1,9 +1,8 @@
 import {Watcher, getValue} from './observe/watcher';
 import {observe} from './observe/index';
 import {mapKeys, initMethods} from './init/index';
-import { renderMixin } from './compile/update';
+import { renderMixin } from './compile/compiler';
 import { initDataMixin } from './init/init';
-import { initModelMixin } from './event/event';
 
 class Vue {
   constructor(options) {
@@ -17,14 +16,11 @@ class Vue {
     mapKeys(this);
     initMethods(this, this.$options.methods);
     observe(this._data);
-    this._render();
-    this._initModel();
-    this._watchData();
+    this._mountDom();
   }
 }
 
 renderMixin(Vue);
 initDataMixin(Vue);
-initModelMixin(Vue);
 
 export { Vue }
