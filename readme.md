@@ -3,6 +3,7 @@
 本工程采用webpack构建，已经实现功能如下：<br>
 1、双向绑定<br>
 2、属性映射和方法重定义<br>
+3、虚拟dom<br>
 
 克隆工程后，请先使用下面指令安装依赖
 ```
@@ -33,6 +34,7 @@ let vm = new Vue({
 双向绑定属性应该是很多人喜欢的Vue这个框架的原因，这个特性让我们无需特别关注dom操作，只需关心值的变化，Vue会自动更新视图（View），更详细的介绍请移步 [双向绑定介绍](./docs/TwoWaysBinding.md)。
 
 
-### 3、实现虚拟dom
+### 3、虚拟dom
 vue源码中虚拟dom是使用snabbdom为原型，作了优化和改动。<br>
-本工程中，我直接使用snabbdom来实现dom的替换。虚拟dom和编译等代码在src/compile/compiler.js中。
+本工程中，我直接使用snabbdom来实现dom的替换。虚拟dom和编译等代码在src/compile/compiler.js中。<br>
+使用虚拟dom的原因是因为，data变化时，需要更新视图。我们知道，如果我们把所有页面元素重新构建一遍是十分耗时的，虚拟dom允许我们只修改有变化的元素，可以优化渲染。
