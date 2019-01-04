@@ -31,3 +31,8 @@ let vm = new Vue({
 
 ### 2、Vue的双向绑定
 双向绑定属性应该是很多人喜欢的Vue这个框架的原因，这个特性让我们无需特别关注dom操作，只需关心值的变化，Vue会自动更新视图（View），更详细的介绍请移步 [双向绑定介绍](./docs/TwoWaysBinding.md)。
+
+
+### 3、实现虚拟dom
+vue源码中虚拟dom是使用snabbdom为原型，作了优化和改动。<br>
+本工程中，我直接使用snabbdom来实现dom的替换。虚拟dom和编译等代码在src/compile/compiler.js中。
