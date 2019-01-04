@@ -2,7 +2,6 @@ import {Watcher, getValue} from './observe/watcher';
 import {observe} from './observe/index';
 import {mapKeys, initMethods} from './init/index';
 import { renderMixin } from './compile/compiler';
-import { initDataMixin } from './init/init';
 
 class Vue {
   constructor(options) {
@@ -21,6 +20,5 @@ class Vue {
 }
 
 renderMixin(Vue);
-initDataMixin(Vue);
 
 export { Vue }

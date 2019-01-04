@@ -44,8 +44,7 @@ export function renderMixin(Vue) {
   }
 
   Vue.prototype._render = function () {
-    let newVnode = cloneVnode(this._originVnode);
-    newVnode.children[1].text = '12431';
+    let newVnode = genNode(this._domCopy, this);
     replaceText(newVnode, this);
     return newVnode;
   }
@@ -58,7 +57,7 @@ export function renderMixin(Vue) {
             let dom = document.querySelector(el);
             if (dom) {
               this._dom = dom;
-              this._originVnode = genNode(dom, vm);
+              this._domCopy = dom.cloneNode(true);
               this._dom.innerText = '';
             } else {
               console.error(`未发现dom: ${el}`);
