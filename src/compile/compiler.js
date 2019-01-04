@@ -19,7 +19,7 @@ const textKey = /\{\{(\w+)\}\}/;
 export function renderMixin(Vue) {
   Vue.prototype._mountDom= function () {
     let vm = this;
-    this._createEle();
+    this._getEle();
     let updateDom = () => {
       vm._update(vm._render());
     }
@@ -45,11 +45,10 @@ export function renderMixin(Vue) {
 
   Vue.prototype._render = function () {
     let newVnode = genNode(this._domCopy, this);
-    replaceText(newVnode, this);
     return newVnode;
   }
 
-  Vue.prototype._createEle = function () {
+  Vue.prototype._getEle = function () {
     let vm = this;
     if (this._dom == undefined) {
         if (this.$options.el) {
@@ -77,7 +76,7 @@ function genNode(dom, vm) {
   let vnode;
   if (dom.nodeType === 3) {
     vnode = dom.nodeValue;
-    return vnode;
+    return replaceStr(vnode, vm);
   }
   let tag = dom.tagName.toLowerCase();
   let id = dom.id ? '#' + dom.id: '';
@@ -148,7 +147,7 @@ function bindModel(data, vm, attr) {
   }
   if (!data.props) {
     data.props = {
-      value: `{{${attr.nodeValue}}}`
+      value: getValue(vm, attr.nodeValue)
     }
   }
   let handleFn = function() {
@@ -161,22 +160,11 @@ function cloneVnode(node) {
   return h(node.sel, node.data, node.children && node.children.slice())
 }
 
-function replaceText(vnode, vm) {
-  if (vnode) {
-    if (vnode.data && vnode.data.props && textKey.test(vnode.data.props.value)) {
-      vnode.data.props.value = vnode.data.props.value.replace(textKey, function(match, key){
-        return vm[key] || '';
-      });
-    }
-    if (textKey.test(vnode.text)) {
-      vnode.text = vnode.text.replace(textKey, function(match, key){
-        return vm[key] || '';
-      });
-    }
-  }
-  if (vnode.children) {
-    vnode.children.map(item => {
-      replaceText(item, vm);
+function replaceStr(str, vm) {
+  if (str) {
+    str = str.replace(textKey, function(match, key){
+      return vm[key] || '';
     });
   }
+  return str;
 }
