@@ -11,7 +11,10 @@ export class Dep {
 
   //添加订阅
   addSub(watcher) {
-    this.subs.push(watcher);
+    //判断该订阅对象是否已经添加到订阅列表
+    let index = this.subs.findIndex(item => item.id == watcher.id);
+    //去重，已经添加的观察者，不再加入订阅列表，即同一个订阅者，只添加到队列一次
+    if (index < 0) this.subs.push(watcher);
   }
 
   //删除订阅者

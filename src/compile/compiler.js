@@ -44,7 +44,7 @@ export function renderMixin(Vue) {
   }
 
   Vue.prototype._render = function () {
-    let newVnode = genNode(this._domCopy, this);
+    let newVnode = this._node.exec();
     return newVnode;
   }
 
@@ -57,6 +57,7 @@ export function renderMixin(Vue) {
             if (dom) {
               this._dom = dom;
               this._domCopy = dom.cloneNode(true);
+              this._node = genNode(this._dom, this);
               this._dom.innerText = '';
             } else {
               console.error(`未发现dom: ${el}`);
@@ -70,27 +71,35 @@ export function renderMixin(Vue) {
 
 //根据dom生成节点
 function genNode(dom, vm) {
-  if (!dom) {
-    return;
-  }
-  let vnode;
+  let node = {
+    sel: '',
+    data: {},
+    children: [],
+    exec: null,
+    vm: vm
+  };
+  //文本节点
   if (dom.nodeType === 3) {
-    vnode = dom.nodeValue;
-    return replaceStr(vnode, vm);
+    node.data = dom.nodeValue;
+    node.exec = function(){
+      let vm = this.vm;
+      let str = this.data;
+      return replaceStr(str, vm);
+    }
+    return node;
   }
+  
+  //普通节点
+  //提取sel
   let tag = dom.tagName.toLowerCase();
   let id = dom.id ? '#' + dom.id: '';
   let classes = dom.className.trim();
   classes = classes.length > 0 ? '.' + classes.replace(/\s+/, '.') : '';
   let sel = `${tag}${id}${classes}`;
-  let children = [];
-  if (dom.childNodes.length > 0) {
-    let childList = Array.from(dom.childNodes);
-    childList.map(item => {
-      children.push(genNode(item, vm));
-    });
-  }
-  let nodeData = {};
+  node.sel = sel;
+
+  //组装data  
+  let nodeData = node.data;
   let attrs = dom.attributes.length > 0 ? Array.from(dom.attributes): [];
   if (attrs) {
     attrs.map(item => {
@@ -101,11 +110,47 @@ function genNode(dom, vm) {
       } else if (item.name === 'v-model') {
         if (dom.tagName === 'INPUT') {
           bindModel(nodeData, vm, item);
+          node.exec = function() {
+            let data = this.data;
+            let vm = this.vm;
+            if (!data.props) {
+              data.props = {
+                value: getValue(vm, item.nodeValue)
+              }
+            } else {
+              data.props.value = getValue(vm, item.nodeValue);
+            }
+            let children = [];
+            if (this.children.length > 0) {
+              this.children.map(item => {
+                children.push(item.exec());
+              })
+            }
+            return h(this.sel, data, children);
+          }
         }
       }
     });
   }
-  return h(sel, nodeData, children);
+
+  //子节点
+  if (dom.childNodes.length > 0) {
+    Array.from(dom.childNodes).map(item => {
+      node.children.push(genNode(item, vm));
+    });
+  }
+  if (!node.exec) {
+    node.exec = function() {
+      let children = [];
+      if (this.children.length > 0) {
+        this.children.map(item => {
+          children.push(item.exec());
+        })
+      }
+      return h(this.sel, this.data, children);
+    }
+  }
+  return node;
 }
 
 //设置监听事件
@@ -144,11 +189,6 @@ function bindModel(data, vm, attr) {
   }
   if(!data.on.input){
     data.on.input = [];
-  }
-  if (!data.props) {
-    data.props = {
-      value: getValue(vm, attr.nodeValue)
-    }
   }
   let handleFn = function() {
     setValue(vm, attr.nodeValue, event.target.value);
