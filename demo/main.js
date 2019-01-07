@@ -9,9 +9,12 @@ let options = {
     methods: {
         sayName() {
             console.log(this.name);
+        },
+        modify() {
+            this.name = '12341XXFDasdf';
         }
     }
 }
 
-
 let vm = new Vue(options);
+

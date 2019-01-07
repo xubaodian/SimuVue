@@ -58,6 +58,7 @@ export function renderMixin(Vue) {
               this._dom = dom;
               this._domCopy = dom.cloneNode(true);
               this._node = genNode(this._dom, this);
+              console.log(this._node);
               this._dom.innerText = '';
             } else {
               console.error(`未发现dom: ${el}`);
@@ -111,7 +112,8 @@ function genNode(dom, vm) {
         if (dom.tagName === 'INPUT') {
           bindModel(nodeData, vm, item);
           node.exec = function() {
-            let data = this.data;
+            let data = JSON.parse(JSON.stringify(this.data));
+            data.on = this.data.on;
             let vm = this.vm;
             if (!data.props) {
               data.props = {
@@ -147,7 +149,9 @@ function genNode(dom, vm) {
           children.push(item.exec());
         })
       }
-      return h(this.sel, this.data, children);
+      let data = JSON.parse(JSON.stringify(this.data));
+      data.on = this.data.on;
+      return h(this.sel, data, children);
     }
   }
   return node;
@@ -158,7 +162,7 @@ function setEvent(data, vm, attr) {
   if (!data.on) {
     data.on = {};
   }
-  let type = attr.name.repalce('@', '');
+  let type = attr.name.replace('@', '');
   let preHandle = data.on[type];
   let handle = attr.nodeValue;
   if (!data.on[type]) {
